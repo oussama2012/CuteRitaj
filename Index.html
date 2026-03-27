@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Ozge ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0510;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-glow: 0 0 10px rgba(255, 182, 193, 0.6);
+            --tulip-pink: #ff6b8b;
+            --tulip-green: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* --- Audio & Hidden Elements --- */
+        #audio-container { display: none; }
+
+        /* --- Backgrounds & Gradients --- */
+        #gradient-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(85, 20, 55, 0.5) 0%, var(--bg-color) 90%);
+            opacity: 0;
+            transition: opacity 4s ease-in-out;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #darken-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* --- Starry Night Parallax --- */
+        #stars-container {
+            position: absolute;
+            top: -10%; left: -10%; width: 120%; height: 120%;
+            z-index: 2;
+            transition: transform 0.2s ease-out;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 160px 120px, #ddd, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.6;
+            animation: twinkle 10s infinite alternate;
+        }
+
+        /* --- Particles --- */
+        #particles {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 192, 203, 0.8), 0 0 20px rgba(255, 192, 203, 0.4);
+            animation: rise 10s infinite linear;
+            opacity: 0;
+        }
+
+        /* --- UI & Glassmorphism --- */
+        #ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #start-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0b0510;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 2s ease;
+        }
+
+        .pulse-text {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.6);
+            animation: pulseOpacity 2s infinite;
+        }
+
+        /* --- The Animated Kitty --- */
+        #kitty-container {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: opacity 2s ease, transform 2s ease;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+            animation: floatCat 4s infinite ease-in-out;
+        }
+
+        #kitty-container.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Kitty Talking Animation */
+        #kitty-container.talking {
+            animation: talkCat 0.3s infinite alternate;
+        }
+        
+        #kitty-container.talking .kitty-mouth {
+            transform-origin: center;
+            transform: scaleY(2.5);
+            transition: transform 0.1s;
+        }
+
+        /* --- The Code-Drawn Tulips --- */
+        #tulips-container {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 400px;
+            opacity: 0;
+            z-index: 5;
+            pointer-events: none;
+            transition: opacity 2s ease;
+        }
+
+        #tulips-container.visible {
+            opacity: 1;
+        }
+
+        .svg-path {
+            fill: transparent;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+        }
+
+        .svg-path.draw {
+            animation: drawSVG 5s ease-in-out forwards;
+        }
+
+        /* Color fills that transition in after drawing */
+        .svg-path.fill-green { transition: fill 2s ease 5s, filter 2s ease 5s; }
+        .svg-path.fill-pink { transition: fill 2s ease 5s, filter 2s ease 5s; }
+        
+        .svg-path.draw.fill-green { 
+            fill: rgba(76, 175, 80, 0.6); 
+            filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.4));
+        }
+        .svg-path.draw.fill-pink { 
+            fill: rgba(255, 107, 139, 0.8); 
+            filter: drop-shadow(0 0 15px rgba(255, 107, 139, 0.6));
+        }
+
+        /* --- Message Box --- */
+        #message-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px 40px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.5s ease, transform 1.5s ease, box-shadow 1s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        #message-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #message-box.glow {
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.4), inset 0 0 20px rgba(255, 105, 180, 0.15);
+            border: 1px solid rgba(255, 105, 180, 0.4);
+        }
+
+        #text-content {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            text-shadow: var(--text-glow);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: white;
+            vertical-align: middle;
+            margin-left: 3px;
+            animation: blink 1s infinite;
+        }
+
+        /* --- Keyframes --- */
+        @keyframes pulseOpacity {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.9; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes floatCat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes talkCat {
+            0% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes drawSVG {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 0.8; transform: translateY(80vh) scale(1); }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+        }
+
+        @keyframes heartbeatPulse {
+            0% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 0, 50, 0.15); }
+            15% { transform: scale(1.04); box-shadow: 0 0 60px rgba(255, 0, 50, 0.4); }
+            30% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 0, 50, 0.15); }
+            45% { transform: scale(1.04); box-shadow: 0 0 60px rgba(255, 0, 50, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 0, 50, 0.15); }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+
+        .heartbeat-active {
+            animation: heartbeatPulse 1.2s infinite ease-in-out !important;
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 600px) {
+            #text-content { font-size: 1.2rem; }
+            #message-box { padding: 25px 20px; }
+            #kitty-container { width: 110px; height: 110px; }
+            #tulips-container { transform: translate(-50%, -60%) scale(0.85); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Assets -->
+    <div id="audio-container">
+        <!-- Soft Romantic Piano -->
+        <audio id="bg-music" loop>
+            <source src="https://cdn.freesound.org/previews/511/511311_11005295-lq.mp3" type="audio/mpeg">
+        </audio>
+        <!-- Soft Cat Purr -->
+        <audio id="purr-sound" loop>
+            <source src="https://cdn.freesound.org/previews/315/315809_4639943-lq.mp3" type="audio/mpeg">
+        </audio>
+        <!-- Heartbeat -->
+        <audio id="heartbeat-sound" loop>
+            <source src="https://cdn.freesound.org/previews/243/243701_4284968-lq.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Start Screen to bypass autoplay policy -->
+    <div id="start-screen">
+        <p class="pulse-text">Tap anywhere to open</p>
+    </div>
+
+    <!-- Visual Layers -->
+    <div id="gradient-bg"></div>
+    <div id="stars-container"></div>
+    <div id="darken-overlay"></div>
+    
+    <!-- Code-Drawn Tulips Container -->
+    <div id="tulips-container">
+        <svg viewBox="0 0 300 400" width="100%" height="100%">
+            <!-- Left Tulip Stem & Leaf -->
+            <path class="svg-path fill-green" stroke="var(--tulip-green)" d="M 120 380 Q 130 250 80 150" />
+            <path class="svg-path fill-green" stroke="var(--tulip-green)" d="M 120 320 Q 60 280 40 200 Q 80 230 110 250" />
+            <!-- Left Tulip Flower -->
+            <path class="svg-path fill-pink" stroke="var(--tulip-pink)" d="M 80 150 C 40 140 30 60 80 40 C 90 70 85 100 80 150 Z" />
+            <path class="svg-path fill-pink" stroke="var(--tulip-pink)" d="M 80 150 C 120 140 130 60 80 40 C 70 70 75 100 80 150 Z" />
+            <path class="svg-path fill-pink" stroke="var(--tulip-pink)" d="M 65 90 Q 80 20 95 90 Q 80 130 65 90 Z" />
+
+            <!-- Right Tulip Stem & Leaf -->
+            <path class="svg-path fill-green" stroke="var(--tulip-green)" d="M 170 390 Q 160 260 220 130" />
+            <path class="svg-path fill-green" stroke="var(--tulip-green)" d="M 170 340 Q 240 300 270 210 Q 220 250 180 270" />
+            <!-- Right Tulip Flower -->
+            <path class="svg-path fill-pink" stroke="var(--tulip-pink)" d="M 220 130 C 180 120 170 40 220 20 C 230 50 225 80 220 130 Z" />
+            <path class="svg-path fill-pink" stroke="var(--tulip-pink)" d="M 220 130 C 260 120 270 40 220 20 C 210 50 215 80 220 130 Z" />
+            <path class="svg-path fill-pink" stroke="var(--tulip-pink)" d="M 205 70 Q 220 0 235 70 Q 220 110 205 70 Z" />
+        </svg>
+    </div>
+
+    <div id="particles"></div>
+
+    <!-- UI Layer -->
+    <div id="ui-layer">
+        
+        <!-- The Animated Kitty SVG -->
+        <div id="kitty-container">
+            <svg viewBox="0 0 200 200" width="100%" height="100%">
+                <!-- Drop shadow def -->
+                <defs>
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="5" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
+                
+                <!-- Kitty Head & Ears -->
+                <polygon points="30,90 15,20 80,60" fill="white" />
+                <polygon points="170,90 185,20 120,60" fill="white" />
+                <ellipse cx="100" cy="110" rx="85" ry="65" fill="white" />
+                
+                <!-- Inner Ears (Pink) -->
+                <polygon points="35,80 25,35 70,65" fill="#ffd1dc" />
+                <polygon points="165,80 175,35 130,65" fill="#ffd1dc" />
+                
+                <!-- Cute Pink Bow -->
+                <path d="M 160 40 C 180 20 200 60 170 70 C 200 80 180 110 160 90 C 150 100 130 90 140 70 C 130 50 150 30 160 40 Z" fill="#ff6b8b" filter="url(#glow)"/>
+                <circle cx="160" cy="65" r="12" fill="#ff477e" />
+
+                <!-- Eyes -->
+                <ellipse cx="60" cy="115" rx="7" ry="12" fill="#222" />
+                <ellipse cx="140" cy="115" rx="7" ry="12" fill="#222" />
+                
+                <!-- Blushes -->
+                <ellipse cx="40" cy="130" rx="12" ry="6" fill="#ffb6c1" opacity="0.6"/>
+                <ellipse cx="160" cy="130" rx="12" ry="6" fill="#ffb6c1" opacity="0.6"/>
+
+                <!-- Nose -->
+                <ellipse cx="100" cy="130" rx="8" ry="5" fill="#ffcc00" />
+                
+                <!-- Mouth (Animated via CSS class 'kitty-mouth') -->
+                <path class="kitty-mouth" d="M 90 140 Q 100 150 110 140" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
+                
+                <!-- Whiskers -->
+                <line x1="10" y1="110" x2="35" y2="115" stroke="#444" stroke-width="2" stroke-linecap="round"/>
+                <line x1="5" y1="125" x2="32" y2="125" stroke="#444" stroke-width="2" stroke-linecap="round"/>
+                <line x1="190" y1="110" x2="165" y2="115" stroke="#444" stroke-width="2" stroke-linecap="round"/>
+                <line x1="195" y1="125" x2="168" y2="125" stroke="#444" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <div id="message-box">
+            <div id="text-content"></div><span class="cursor" id="cursor"></span>
+        </div>
+    </div>
+
+    <script>
+        // --- Element References ---
+        const startScreen = document.getElementById('start-screen');
+        const messageBox = document.getElementById('message-box');
+        const textContent = document.getElementById('text-content');
+        const cursor = document.getElementById('cursor');
+        
+        const kittyContainer = document.getElementById('kitty-container');
+        const tulipsContainer = document.getElementById('tulips-container');
+        const svgPaths = document.querySelectorAll('.svg-path');
+
+        const bgMusic = document.getElementById('bg-music');
+        const purrSound = document.getElementById('purr-sound');
+        const heartbeatSound = document.getElementById('heartbeat-sound');
+        
+        const gradientBg = document.getElementById('gradient-bg');
+        const darkenOverlay = document.getElementById('darken-overlay');
+        const starsContainer = document.getElementById('stars-container');
+        const particlesContainer = document.getElementById('particles');
+
+        // --- State Variables ---
+        let currentStep = -1; // -1 is init, 0 is the first delayed message
+        let isAnimating = false;
+        let heartbeatInterval = null;
+
+        // --- Story Sequence ---
+        const story = [
+            { text: "Hey… don't leave… this is for you ❤️", showKitty: true },
+            { text: "Hey… I found you…" },
+            { text: "Hey Ozge… yes you ❤️" },
+            { text: "We cats only choose special people… and I chose you, Ozge 🐾❤️" },
+            { text: "Your eyes shine brighter than stars… and your smile? it's dangerous ✨" },
+            { text: "Even me… a cat… felt something strange when I saw you… maybe love? 😳", preDelay: 800 },
+            { text: "Can I stay with you… even just in your dreams, Ozge? 💭", gradient: true, spawnParticles: true },
+            { text: "Oussama… sent me 🐾", darken: true },
+            { text: "He says…", autoAdvanceToNext: true, autoAdvanceDelay: 1500 }, // Tension builder
+            { text: "He gives you a kiss 💋", startHeartbeat: true, pulseBox: true, preDelay: 500 },
+            { text: "And these tulips… just for you, Ozge 🌷", drawTulips: true, hideKitty: true, clearDarken: true },
+            { text: "Because you deserve something beautiful…", finalPart: "<br><br>...just like you ❤️", finalDelay: 2000, slowType: true }
+        ];
+
+        // --- Core Functions ---
+
+        // Typing Effect function with Kitty Mouth Sync
+        async function typeWriter(text, speed = 50, element = textContent) {
+            element.innerHTML = "";
+            cursor.style.display = 'inline-block';
+            kittyContainer.classList.add('talking'); // Make Kitty talk
+
+            for (let i = 0; i < text.length; i++) {
+                if (text.substring(i, i + 4) === '<br>') {
+                    element.innerHTML += '<br>';
+                    i += 3;
+                    continue;
+                }
+                element.innerHTML += text.charAt(i);
+                
+                // Haptic feedback for typing (subtle)
+                if (i % 3 === 0 && navigator.vibrate) navigator.vibrate(5);
+                
+                await new Promise(r => setTimeout(r, speed));
+            }
+            kittyContainer.classList.remove('talking'); // Stop Kitty talking
+        }
+
+        // Particle Generator
+        function createParticles() {
+            for (let i = 0; i < 35; i++) {
+                let particle = document.createElement('div');
+                particle.className = 'particle';
+                let size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDuration = `${Math.random() * 5 + 6}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Trigger Code-Drawn Tulips
+        function startDrawingTulips() {
+            tulipsContainer.classList.add('visible');
+            // Shift message box down slightly so tulips are visible
+            messageBox.style.transform = 'translateY(80px)';
+            
+            svgPaths.forEach(path => {
+                path.classList.add('draw');
+            });
+        }
+
+        // Haptic Heartbeat pattern
+        function startHapticHeartbeat() {
+            if (navigator.vibrate) {
+                heartbeatInterval = setInterval(() => {
+                    navigator.vibrate([70, 50, 70]);
+                }, 1200);
+            }
+        }
+
+        // Audio Setup & Initial Click
+        function initExperience() {
+            if (currentStep !== -1) return;
+            
+            // Start Audio
+            bgMusic.volume = 0.3;
+            purrSound.volume = 0.0; // Hidden initially
+            heartbeatSound.volume = 0;
+            
+            bgMusic.play().catch(()=>{});
+            purrSound.play().catch(()=>{});
+            heartbeatSound.play().catch(()=>{});
+
+            // Fade out start screen
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                startStorySequence();
+            }, 2000); // 2 second black screen as requested
+        }
+
+        // The Story Logic Controller
+        async function processStep() {
+            if (isAnimating || currentStep >= story.length) return;
+            isAnimating = true;
+
+            const step = story[currentStep];
+
+            // 1. Pre-delays (e.g., Step 5 hesitation)
+            if (step.preDelay) {
+                textContent.innerHTML = "";
+                cursor.style.display = 'inline-block';
+                await new Promise(r => setTimeout(r, step.preDelay));
+            }
+
+            // 2. Visual & Character changes
+            if (step.showKitty) kittyContainer.classList.add('visible');
+            if (step.hideKitty) {
+                kittyContainer.classList.remove('visible');
+                setTimeout(() => kittyContainer.style.display = 'none', 2000);
+            }
+            if (step.gradient) gradientBg.style.opacity = '1';
+            if (step.darken) darkenOverlay.style.opacity = '1';
+            if (step.clearDarken) {
+                darkenOverlay.style.opacity = '0';
+                gradientBg.style.opacity = '0.5';
+            }
+            if (step.spawnParticles) createParticles();
+            if (step.pulseBox) messageBox.classList.add('heartbeat-active', 'glow');
+            if (step.drawTulips) startDrawingTulips();
+
+            // 3. Audio / Haptic triggers
+            if (step.startHeartbeat) {
+                heartbeatSound.volume = 0.6;
+                startHapticHeartbeat();
+            }
+
+            // Bring up purr volume while typing
+            if(!step.hideKitty) purrSound.volume = 0.4;
+            
+            // 4. Type text
+            let typingSpeed = step.slowType ? 90 : 45;
+            await typeWriter(step.text, typingSpeed);
+
+            // 5. Special Final Step handling
+            if (step.finalPart) {
+                cursor.style.display = 'inline-block';
+                await new Promise(r => setTimeout(r, step.finalDelay)); // Dramatic pause
+                await typeWriter(step.finalPart, 120, textContent); // Append text slowly
+            }
+
+            // Turn down purr when done typing
+            setTimeout(() => { purrSound.volume = 0.1; }, 500);
+
+            // 6. Post-step logic (Auto-advance for tension like Step 8)
+            if (step.autoAdvanceToNext) {
+                cursor.style.display = 'none';
+                await new Promise(r => setTimeout(r, step.autoAdvanceDelay));
+                currentStep++;
+                isAnimating = false;
+                processStep(); // Automatically call next step
+                return;
+            }
+
+            // Finish step
+            isAnimating = false;
+            
+            // Hide cursor if it's the very last step to keep it clean
+            if (currentStep === story.length - 1) {
+                cursor.style.display = 'none';
+            }
+        }
+
+        async function startStorySequence() {
+            currentStep = 0;
+            messageBox.classList.add('visible');
+            await processStep();
+        }
+
+        // --- Event Listeners ---
+
+        // Main interaction click
+        document.body.addEventListener('click', () => {
+            if (currentStep === -1) {
+                initExperience();
+            } else if (!isAnimating && currentStep < story.length - 1) {
+                if (navigator.vibrate) navigator.vibrate(30); // Gentle tap feedback
+                currentStep++;
+                processStep();
+            }
+        });
+
+        // Parallax Effect based on mouse/touch movement for the Stars
+        document.addEventListener('mousemove', (e) => {
+            if(currentStep === -1) return;
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            starsContainer.style.transform = `translate(${-x}px, ${-y}px)`;
+            
+            // Subtle inverse parallax for tulips to add depth
+            if(tulipsContainer.classList.contains('visible')) {
+                tulipsContainer.style.transform = `translate(calc(-50% + ${x*0.5}px), calc(-50% + ${y*0.5}px))`;
+            }
+        });
+
+        // Mobile device orientation parallax
+        window.addEventListener('deviceorientation', (e) => {
+            if(currentStep === -1 || !e.gamma || !e.beta) return;
+            const x = (e.gamma / 90) * 20; 
+            let betaAdjusted = e.beta;
+            if(betaAdjusted > 90) betaAdjusted = 90;
+            if(betaAdjusted < -90) betaAdjusted = -90;
+            const y = (e.beta / 90) * 20;
+            
+            starsContainer.style.transform = `translate(${-x}px, ${-y}px)`;
+        });
+
+    </script>
+</body>
+</html>
+
